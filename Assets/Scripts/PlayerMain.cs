@@ -14,17 +14,13 @@ public class PlayerMain : MonoBehaviour
         if (pv.IsMine)
         {
             GameObject.FindGameObjectWithTag("Manager").GetComponent<Manager>().AddPlayer(transform.GetChild(0).gameObject.GetComponent<Camera>());
+            GetComponent<PlayerMovement>().enabled = true;
+            transform.GetChild(0).gameObject.GetComponent<CameraControl>().enabled = true;
+
+            transform.position = new Vector3(0f, 2f, 0f);
         }
     }
 
-    IEnumerator killme()
-    {
-        for (int i = 0; i < 16; i++)
-               {
-            yield return new WaitForSeconds(3);
-            
-        }
-    }
 
     // Update is called once per frame
     void Update()
