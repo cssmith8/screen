@@ -40,6 +40,7 @@ public class PlayerMovement : MonoBehaviour
         transform.position += xmotion * transform.right * moveSpeed * Time.fixedDeltaTime;
 
         rb.velocity = new Vector3(0f, rb.velocity.y, 0f);
+        rb.angularVelocity = Vector3.zero;
 
     }
 }
