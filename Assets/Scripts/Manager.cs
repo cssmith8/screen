@@ -5,12 +5,13 @@ using Photon.Pun;
 using JetBrains.Annotations;
 using Unity.VisualScripting;
 using static UnityEngine.Rendering.DebugUI.Table;
+using UnityEngine.UI;
 
 public class Manager : MonoBehaviour
 {
     [SerializeField] private GameObject panelObject;
     [HideInInspector] public List<GameObject> panels = new List<GameObject>();
-    [HideInInspector] private List<RenderTexture> renderTextures = new List<RenderTexture>();
+    [SerializeField] private List<RenderTexture> renderTextures = new List<RenderTexture>();
     [HideInInspector] private List<Material> renderMaterials = new List<Material>();
     [SerializeField] private GameObject playerObject;
 
@@ -38,11 +39,11 @@ public class Manager : MonoBehaviour
         m.mainTexture = r;
         renderMaterials.Add(m);
 
-        for (int i = 0; i < 15; i++) {
+        
         GameObject go = Instantiate(panelObject);
-        go.GetComponent<MeshRenderer>().material = m;
+        go.transform.SetParent(transform.GetChild(0));
+        go.GetComponent<RawImage>().texture = r;
         panels.Add(go);
-        }
 
         RealignViews();
 
@@ -54,28 +55,36 @@ public class Manager : MonoBehaviour
         int rows = (int)Mathf.Ceil(Mathf.Sqrt(numViews));
         if (rows == 0) return;
 
-        Vector3 initialScale = new Vector3(192, 1, 108);
+        Vector3 initialScale = new Vector3(19.2f, 10.8f, 1);
         foreach (GameObject go in panels)
         {
-            go.GetComponent<RectTransform>().localScale = initialScale / rows / 2;
+            go.GetComponent<RectTransform>().localScale = initialScale / rows;
         }
 
-        for (int row = 0; row < rows - 1; row++)
+        for (int row = 0; row < rows; row++)
         {
             for (int col = 0; col < rows; col++)
             {
                 int index = row * rows + col;
                 if (index < numViews)
                 {
-                    panels[index].GetComponent<RectTransform>().localPosition = new Vector3(((col + 0.5f) / rows) * 1920 / 2, ((row + 0.5f) / rows) * -1080 / 2 + 1080 / 2, 0); ;
+                    panels[index].GetComponent<RectTransform>().localPosition = new Vector3(((col + 0.5f) / rows) * 1920 - 960, ((row + 0.5f) / rows) * -1080 + 540, 0); ;
                 }
             }
         }
 
+        /*
         int remaining = numViews - (rows - 1) * rows;
         for (int i = 0; i < remaining; i++)
         {
-            panels[numViews - 1 - i].GetComponent<RectTransform>().localPosition = new Vector3(((i + 0.5f) / rows) * 1920 / 2, ((rows - 0.5f) / rows) * -1080 / 2 + 1080 / 2, 0);
+            panels[numViews - 1 - i].GetComponent<RectTransform>().localPosition = new Vector3(((i + 0.5f) / rows) * 1920 - 960, ((rows - 0.5f) / rows) * -1080 + 540, 0);
+        }
+        //*/
+
+        int emptyRows = ((int)Mathf.Pow((float)rows, 2f) - numViews) / rows;
+        foreach(GameObject go in panels)
+        {
+            go.GetComponent<RectTransform>().localPosition += new Vector3(0, -1080 / rows / 2 * emptyRows, 0);
         }
     }
 }

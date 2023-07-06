@@ -13,7 +13,16 @@ public class PlayerMain : MonoBehaviour
         pv = GetComponent<PhotonView>();
         if (pv.IsMine)
         {
-            GameObject.FindGameObjectWithTag("Manager").GetComponent<Manager>().AddPlayer(Camera.main);
+            GameObject.FindGameObjectWithTag("Manager").GetComponent<Manager>().AddPlayer(transform.GetChild(0).gameObject.GetComponent<Camera>());
+        }
+    }
+
+    IEnumerator killme()
+    {
+        for (int i = 0; i < 16; i++)
+               {
+            yield return new WaitForSeconds(3);
+            
         }
     }
 
