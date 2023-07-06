@@ -3,12 +3,16 @@ using Photon.Realtime;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 public class Menu : MonoBehaviourPunCallbacks
 {
     private int creationAttempts = 0;
     [SerializeField]
     private GameObject gameCanvas;
+    [SerializeField]
+    private TMP_InputField inputField;
     //public string roomName = "";
 
     // Start is called before the first frame update
@@ -44,6 +48,16 @@ public class Menu : MonoBehaviourPunCallbacks
         {
             Debug.Log("Failed to create room");
         }
+    }
+
+    public void JoinRoom()
+    {
+        PhotonNetwork.JoinRoom(inputField.text);
+    }
+
+    public override void OnJoinRoomFailed(short returnCode, string message)
+    {
+        Debug.Log("Failed to join room. Error " + returnCode.ToString() + " message: " + message);
     }
 
     public override void OnJoinedRoom()
