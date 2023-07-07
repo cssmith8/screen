@@ -39,7 +39,7 @@ public class PlayerMain : MonoBehaviour
     [PunRPC]
     void AddRenderTexture()
     {
-        GameObject.FindGameObjectWithTag("Manager").GetComponent<Manager>().AddPlayer(transform.GetChild(0).gameObject.GetComponent<Camera>());
+        GameObject.FindGameObjectWithTag("Manager").GetComponent<Manager>().AddPlayer(transform.GetChild(0).gameObject.GetComponent<Camera>(), GetComponent<PhotonView>().Owner);
     }
 
     [PunRPC]

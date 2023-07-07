@@ -7,12 +7,13 @@ using Unity.VisualScripting;
 using static UnityEngine.Rendering.DebugUI.Table;
 using UnityEngine.UI;
 
-public class Manager : MonoBehaviour
+public class Manager : MonoBehaviourPunCallbacks
 {
     [SerializeField] private GameObject panelObject;
     [HideInInspector] public List<GameObject> panels = new List<GameObject>();
-    [SerializeField] private List<RenderTexture> renderTextures = new List<RenderTexture>();
-    [HideInInspector] private List<Material> renderMaterials = new List<Material>();
+    [HideInInspector] private List<RenderTexture> renderTextures = new List<RenderTexture>();
+    [HideInInspector] private List<Photon.Realtime.Player> players = new List<Photon.Realtime.Player>();
+    //[HideInInspector] private List<Material> renderMaterials = new List<Material>();
     [SerializeField] private GameObject playerObject;
 
     // Start is called before the first frame update
@@ -28,17 +29,18 @@ public class Manager : MonoBehaviour
         
     }
 
-    public void AddPlayer(Camera c)
+    public void AddPlayer(Camera c, Photon.Realtime.Player p)
     {
         RenderTexture r = new RenderTexture(1280, 720, 16, RenderTextureFormat.ARGB32);
         //assign c to the render texture
         c.targetTexture = r;
         renderTextures.Add(r);
 
-        Material m = new Material(Shader.Find("Universal Render Pipeline/Lit"));
-        m.mainTexture = r;
-        renderMaterials.Add(m);
+        //Material m = new Material(Shader.Find("Universal Render Pipeline/Lit"));
+        //m.mainTexture = r;
+        //renderMaterials.Add(m);
 
+        players.Add(p);
         
         GameObject go = Instantiate(panelObject);
         go.transform.SetParent(transform.GetChild(0));
@@ -85,6 +87,21 @@ public class Manager : MonoBehaviour
         foreach(GameObject go in panels)
         {
             go.GetComponent<RectTransform>().localPosition += new Vector3(0, -1080 / rows / 2 * emptyRows, 0);
+        }
+    }
+
+    public override void OnPlayerLeftRoom(Photon.Realtime.Player p)
+    {
+        for (int i = 0; i < players.Count; i++) {
+            if (players[i] == p)
+            {
+                Destroy(panels[i]);
+                panels.RemoveAt(i);
+                renderTextures.RemoveAt(i);
+                players.RemoveAt(i);
+                RealignViews();
+                i--;
+            }
         }
     }
 }
