@@ -42,7 +42,7 @@ public class RoomPanel : MonoBehaviour
 
     void UpdatePlayerList()
     {
-        playerList.text = "";
+        playerList.text = "Players:\n";
 
         foreach (Photon.Realtime.Player pl in PhotonNetwork.PlayerList)
         {
@@ -65,6 +65,10 @@ public class RoomPanel : MonoBehaviour
             //hash["started"] = true;
             //PhotonNetwork.CurrentRoom.SetCustomProperties(hash);
 
+            var hash = PhotonNetwork.CurrentRoom.CustomProperties;
+            hash["started"] = true;
+            PhotonNetwork.CurrentRoom.SetCustomProperties(hash);
+
             pv.RPC("EnterGame", RpcTarget.All);
         }
     }
@@ -72,6 +76,7 @@ public class RoomPanel : MonoBehaviour
     [PunRPC]
     void EnterGame()
     {
+        SceneData.Instance.started = false;
         PhotonNetwork.LoadLevel("Map1");
     }
 }

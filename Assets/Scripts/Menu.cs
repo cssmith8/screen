@@ -9,10 +9,9 @@ using TMPro;
 public class Menu : MonoBehaviourPunCallbacks
 {
     private int creationAttempts = 0;
-    [SerializeField]
-    private GameObject gameCanvas;
-    [SerializeField]
-    private TMP_InputField inputField;
+    [SerializeField] private GameObject gameCanvas;
+    [SerializeField] private TMP_InputField inputField;
+    [SerializeField] private TMP_InputField usernameField;
     //public string roomName = "";
 
     // Start is called before the first frame update
@@ -34,7 +33,15 @@ public class Menu : MonoBehaviourPunCallbacks
         //roomOptions.IsVisible = false;
         //PhotonNetwork.CreateRoom("test10", roomOptions);
         //roomName = CreateRandomName();
+        
         PhotonNetwork.CreateRoom(CreateRandomName());
+    }
+
+    public override void OnCreatedRoom()
+    {
+        var hash = PhotonNetwork.CurrentRoom.CustomProperties;
+        hash["started"] = false;
+        PhotonNetwork.CurrentRoom.SetCustomProperties(hash);
     }
 
     public void OnCreateRoomFailed()
@@ -52,6 +59,11 @@ public class Menu : MonoBehaviourPunCallbacks
 
     public void JoinRoom()
     {
+        if (usernameField.text == "")
+        {
+            usernameField.text = "Player";
+        }
+        PhotonNetwork.NickName = usernameField.text;
         PhotonNetwork.JoinRoom(inputField.text);
     }
 
@@ -62,7 +74,17 @@ public class Menu : MonoBehaviourPunCallbacks
 
     public override void OnJoinedRoom()
     {
-        GameObject go = PhotonNetwork.Instantiate(gameCanvas.name, transform.position, transform.rotation);
+        var hash = PhotonNetwork.CurrentRoom.CustomProperties;
+        if ((bool)hash["started"] == false)
+        {
+            GameObject go = PhotonNetwork.Instantiate(gameCanvas.name, transform.position, transform.rotation);
+        } else
+        {
+            //game in progress
+            SceneData.Instance.started = true;
+            PhotonNetwork.LoadLevel("Map1");
+        }
+        
     }
 
     private string CreateRandomName(int length = 6)

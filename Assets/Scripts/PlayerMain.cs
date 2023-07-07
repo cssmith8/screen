@@ -13,7 +13,15 @@ public class PlayerMain : MonoBehaviour
         pv = GetComponent<PhotonView>();
         if (pv.IsMine)
         {
+            SceneData.Instance.localPlayer = gameObject;
             pv.RPC("AddRenderTexture", RpcTarget.All, null);
+
+            if (SceneData.Instance.started == true)
+            {
+                pv.RPC("RequestCamera", RpcTarget.All, PhotonNetwork.LocalPlayer);
+            }
+
+
             GetComponent<PlayerMovement>().enabled = true;
             transform.GetChild(0).gameObject.GetComponent<CameraControl>().enabled = true;
 
@@ -32,5 +40,12 @@ public class PlayerMain : MonoBehaviour
     void AddRenderTexture()
     {
         GameObject.FindGameObjectWithTag("Manager").GetComponent<Manager>().AddPlayer(transform.GetChild(0).gameObject.GetComponent<Camera>());
+    }
+
+    [PunRPC]
+    void RequestCamera(Photon.Realtime.Player p)
+    {
+        if (p != PhotonNetwork.LocalPlayer)
+        SceneData.Instance.localPlayer.GetComponent<PhotonView>().RPC("AddRenderTexture", p, null);
     }
 }
