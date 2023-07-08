@@ -44,7 +44,8 @@ public class Manager : MonoBehaviourPunCallbacks
         
         GameObject go = Instantiate(panelObject);
         go.transform.SetParent(transform.GetChild(0));
-        go.GetComponent<RawImage>().texture = r;
+        go.transform.GetChild(0).gameObject.GetComponent<RawImage>().texture = r;
+        go.transform.GetChild(1).gameObject.GetComponent<TMPro.TMP_Text>().text = p.NickName;
         panels.Add(go);
 
         RealignViews();
@@ -57,7 +58,7 @@ public class Manager : MonoBehaviourPunCallbacks
         int rows = (int)Mathf.Ceil(Mathf.Sqrt(numViews));
         if (rows == 0) return;
 
-        Vector3 initialScale = new Vector3(19.2f, 10.8f, 1);
+        Vector3 initialScale = new Vector3(1, 1, 1);
         foreach (GameObject go in panels)
         {
             go.GetComponent<RectTransform>().localScale = initialScale / rows;

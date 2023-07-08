@@ -59,12 +59,7 @@ public class Menu : MonoBehaviourPunCallbacks
 
     public void JoinRoom()
     {
-        if (usernameField.text == "")
-        {
-            usernameField.text = "Player";
-        }
-        PhotonNetwork.NickName = usernameField.text;
-        PhotonNetwork.JoinRoom(inputField.text);
+        PhotonNetwork.JoinRoom(inputField.text.Trim().ToLower());
     }
 
     public override void OnJoinRoomFailed(short returnCode, string message)
@@ -74,6 +69,8 @@ public class Menu : MonoBehaviourPunCallbacks
 
     public override void OnJoinedRoom()
     {
+        Debug.Log(PhotonNetwork.NickName);
+        Debug.Log(PhotonNetwork.NickName.Length);
         var hash = PhotonNetwork.CurrentRoom.CustomProperties;
         if ((bool)hash["started"] == false)
         {
@@ -85,6 +82,16 @@ public class Menu : MonoBehaviourPunCallbacks
             PhotonNetwork.LoadLevel("Map1");
         }
         
+    }
+
+    public void OnUsernameUpdate()
+    {
+        string name = usernameField.text;
+        if (name == "" || name == " ")
+        {
+            name = "Player";
+        }
+        PhotonNetwork.NickName = name;
     }
 
     private string CreateRandomName(int length = 6)
